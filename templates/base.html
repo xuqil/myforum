@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load staticfiles %}
-{% load forum_tags %}
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}
@@ -16,15 +15,9 @@
 
     <link rel="stylesheet" href="{% static 'css/semantic.css' %}">
     <link rel="stylesheet" href="{% static 'css/my_styles.css' %}">
-    <!--代码高亮-->
-    <link rel="stylesheet" href="{% static 'css/prism.css' %}">
-    <script src="{% static 'ckeditor/ckeditor/plugins/prism_1.0.1/prism/lib/prism/prism_patched.min.js' %}"></script>
 
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/semantic.js' %}"></script>
-    <!--富文本编辑器配置-->
-    <script src="{% static '/ckeditor/ckeditor/ckeditor.js' %}"></script>
-    <script src="{% static '/ckeditor/ckeditor-init.js' %}"></script>
 </head>
 <body style="background-color: #FAFAFA;">
 <!--nav-->
@@ -39,39 +32,36 @@
         <a class="item">
             问答
         </a>
-        <a class="item" href="{% url 'forum:boards' %}">
+        <a class="item" href="#">
             专栏
         </a>
         <div class="right menu">
             <div class="item">
                 <div class="ui icon input">
-                    <form role="search" method="get" id="searchform" action="{% url 'haystack_search' %}">
+                    <form role="search" method="get" id="searchform" action="#">
                     <input type="search" name="q" placeholder="搜索...">
                     <button type="submit" style="background: transparent; border: 0; padding: 0"><i class="search link icon"></i></button>
                     </form>
                 </div>
             </div>
-            {% if request.user.is_authenticated %}
                 <!--登录-->
                 <div class="ui text menu">
                     <div class="header item">
-                        <a href="{% url 'users:user_center' %}">
-                            {{ request.user.username }}
+                        <a href="#">
+                            用户
                         </a>
                     </div>
-                    <a class="active item" href="{% url 'users:user_center' %}">设置</a>
-                    <a class="item" href="{% url 'users:logout' %}">退出 </a>
+                    <a class="active item" href="#">设置</a>
+                    <a class="item" href="#}">退出 </a>
                 </div>
-            {% else %}
                 <!--未登录-->
                 <div class="item">
                     <div class="ui mini buttons">
-                        <button class="ui button" type="submit" onclick="location='{% url 'users:register' %}'">注册</button>
+                        <button class="ui button" type="submit" onclick="location='#'">注册</button>
                         <div class="or"></div>
-                        <button class="ui teal button" type="submit" onclick="location='{% url 'users:login' %}'">登录</button>
+                        <button class="ui teal button" type="submit" onclick="location='#'">登录</button>
                     </div>
                 </div>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -90,17 +80,14 @@
             <div class="ui header">热议主题</div>
             <div class="ui divider"></div>
             <div class="ui middle aligned list">
-                {% get_got_topics as hot_topics %}
-                {% for hot_topic in hot_topics %}
+
                     <div class="item">
-                    <img class="ui avatar image" src="{{ MEDIA_URL }}{{ hot_topic.user.avatar }}">
+                    <img class="ui avatar image" src="#">
                     <div class="content">
-                        <a href="{% url 'forum:detail' hot_topic.pk %}" class="description">{{ hot_topic }}</a>
+                        <a href="#" class="description">主题1</a>
                     </div>
                 </div>
-                    {% empty %}
-                    没有热议主题
-                {% endfor %}
+
             </div>
 
         </div>
@@ -109,12 +96,8 @@
             <div class="ui header">标签云</div>
             <div class="ui divider"></div>
             <div class="ui labels">
-            {% get_tags as tags %}
-                {% for tag in tags %}
-                <a href="{% url 'forum:tag_detail' tag.pk%}" class="ui basic label">{{ tag.name }}</a>
-                {% empty %}
-                <p>暂时没有标签</p>
-                {% endfor %}
+
+                <a href="#" class="ui basic label">python</a>
             </div>
         </div>
         <!--站点信息-->
@@ -127,8 +110,7 @@
                         主题数
                     </div>
                     <div class="value">
-                        {% get_topics_count as topics_count %}
-                        {{ topics_count }}
+                        22
                     </div>
                 </div>
                 <div class="orange statistic">
@@ -136,8 +118,7 @@
                         回复数
                     </div>
                     <div class="value">
-                        {% get_comments_count as comments_count %}
-                        {{ comments_count }}
+                        4
                     </div>
                 </div>
                 <div class="yellow statistic">
@@ -145,8 +126,7 @@
                         注册用户
                     </div>
                     <div class="value">
-                        {% get_users_count as users_count %}
-                        {{ users_count }}
+                        4
                     </div>
                 </div>
                 <div class="olive statistic">
