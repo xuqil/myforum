@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'forum.apps.ForumConfig',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,9 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+# 自定义用户
+AUTH_USER_MODEL = 'users.UserProfile'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
