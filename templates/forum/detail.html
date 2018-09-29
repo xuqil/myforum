@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load forum_tags %}
+
+{% block title %}
+    {{ topic.title}}
+{% endblock %}
+
+
+{% block con_ten %}
+    <div class="ui raised segment">
+        <div class="ui breadcrumb">
+            <a href="{% url 'forum:index' %}" class="section">主页</a>
+            <i class="right angle icon divider"></i>
+            <a href="#" class="section">技术</a>
+            <i class="right angle icon divider"></i>
+            <a href="{% url 'forum:board_detail' topic.boards.id %}" class="section">{{ topic.boards }}</a>
+        </div>
+        <!--主题详情-->
+        <div class="ui vertical segment">
+            <div class="ui container">
+                <h2 class="ui dividing header">
+                    <img src="{{ MEDIA_URL }}{{ topic.user.avatar }}" alt="" class="ui circular image"
+                         onclick='window.location.href="#"'>
+                    <div class="content">{{ topic.title }}
+                        <div class="sub header">by {{ topic.user }} at {{ topic.add_time | date:"Y-m-d" }} •
+                            {{ topic.views }}人看过
+                        </div>
+                    </div>
+                    <button class="ui basic mini button" style="margin-left: 20px;" id="collection-btn"
+                            data-favid="{{ topic.id }}">
+                        <a style="color: #4c4f52" href="{% url 'operation:add_fav' topic.pk%}">
+                            收藏
+                        </a>
+                    </button>
+                    {% if request.user == topic.user %}
+                        <button class="ui basic mini button" style="margin-left: 20px;" id="collection-btn"
+                            data-favid="{{ topic.id }}">
+                            <a style="color: #4c4f52" href="{% url 'forum:topic_delete' topic.id %}">删除</a>
+                        </button>
+                        <button class="ui basic mini button" style="margin-left: 20px;" id="collection-btn"
+                            data-favid="{{ topic.id }}">
+                            <a style="color: #4c4f52" href="{% url 'forum:topic_update' topic.pk %}">修改</a>
+                        </button>
+                    {% endif %}
+                </h2>
+                <div CLASS="ShaShiDi">{{ topic.content|safe }}</div>
+                <h6 class="ui header">
+                    <i class="tags icon"></i>
+                    <div class="content">
+                        {% for tag in topic.tags.all %}
+                            {{ tag.name }}、
+                            {% empty %}
+                            暂时没有标签
+                        {% endfor %}
+                    </div>
+                </h6>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ui raised segment">
+        <!--评论-->
+        <div class="ui comments">
+            <div class="ui dividing header">评论</div>
+            {% if request.user.is_authenticated %}
+                <!-- 已登录 -->
+                <form class="ui reply form" method="post" action="{% url 'operation:comment' topic.id %}">
+                    {{ comment_form.as_p }}
+                    {% csrf_token %}
+                    <button class="ui blue labeled submit icon button" type="submit"><i class="icon edit"></i>
+                        回复
+                    </button>
+                </form>
+            {% else %}
+                <!-- 未登录 -->
+                <div class="ui center aligned vertical basic segment">
+                    <a class="ui blue labeled submit icon button" type="submit" href="{% url 'users:login' %}"><i
+                            class="icon edit"></i> 登录回复 </a>
+                </div>
+            {% endif %}
+            {% for comment in topic_comment %}
+                <div class="comment">
+                    <a class="avatar">
+                        <img src="{{ MEDIA_URL }}{{ comment.user.avatar }}">
+                    </a>
+                    <div class="content">
+                        <a class="author">{{ comment.user.username }}</a>
+                        <div class="metadata">
+                            <div class="date">{{ comment.add_time | date:"m-d" }}</div>
+                            <div class="rating"><i class="star icon"></i> 5 Faves</div>
+                        </div>
+                        <div class="text ShaShiDi">@{{ topic.user }} #1: {{ comment.content|safe }}</div>
+                        <div class="ui label" style="position: absolute; right: 10px; top: 15px;">
+                            #{{ comment.id }}</div>
+                    </div>
+                </div>
+                <div class="ui divider"></div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block con_six %}
+{% endblock %}
+
+<script>
+    // 扩展js的功能,可以使用字符串拼接功能
+    String.prototype.format= function(){
+                   var args = arguments;
+                   return this.replace(/\{(\d+)\}/g,function(s,i){
+                     return args[i];
+                   });
+            };
+
+    var parent_comment_id = "";  // 设置全局变量,当点击回复按钮则赋值为点击的评论的id;
+    var father_comment_username = ''; // 设置父级标签的全局变量,同样是点击回复按钮则设置对应的值;
+    var father_comment_content = '';
+    var reply_ele = '';
+    // 回复评论事件
+    $('.blog_comment').on('click', '.reply', function () {
+        // 1.取出该条评论的id值,即为class属性值, 定位到父级标签后,就可以取出父级评论的内容;
+        parent_comment_id = $(this).prev().attr('id');
+        reply_ele = $(this).parent().next()
+        $('#comment_input').focus()
+    });
+
+
+
+    // 增加文章评论
+      $("#comment_submit_btn").click(function () {
+          var comment_content=$("#comment_input").val().trim();
+          {% if request.user.is_authenticated %}
+            $.ajax({
+               url:"/blog/comment/",
+               type:"post",
+               data:{"csrfmiddlewaretoken":$("[name='csrfmiddlewaretoken']").val(),
+                     "topic_id":{{ topic.id }},
+                     "comment_content":comment_content,
+                     "parent_comment_id":parent_comment_id
+               },
+
+               success:function (data) {
+                    // 判断是否是通过回复按钮来添加评论的,注意必须在最后清空father_comment_username这个变量
+                   var temp=father_comment_username;
+                   s = ' <div class="comment_item"> <div class="comment-header"> <a href="#"><span class="user_name">{0}</span></a> <span class="comment_time">{1}</span> <span class="comment_content">{2}</span> <span id="{3}" hidden></span> <a class="reply">回复</a> </div> <div class="comment-body">{4}</div> </div>'
+
+                   // js中利用字符串拼接
+                   s=s.format('{{ request.user.username }}',
+                            data.comment_add_time,
+                            comment_content,
+                            data.comment_id, '');
+                    console.log(reply_ele)
+                   if (reply_ele){
+                        reply_ele.append(s);
+                   }
+                   else
+                   {
+                       $('.blog_comment').append(s)
+                   }
+
+                   $("#comment_input").val("");
+
+                   // 关键点, 每次走完此处必须对全局变量清零
+                   father_comment_username="";
+                   parent_comment_id=0;
+                   father_comment_content=''
+                   reply_ele = '';
+            }
+       });
+
+          {% else %}
+           location.href="/login?path={{ request.path }}";
+          {% endif %}
+      });
+
+</script>
+
+<style>
+    .comment_item{
+        background: #f6f6f6;
+        padding-top: 15px;
+        padding-left: 15px;
+        margin-bottom: 10px;
+    }
+    .comment-header > span, .comment-header > a{
+        margin-right: 20px;
+    }
+
+    .reply{
+        font-size: 8px;
+        cursor: pointer;
+    }
+    .user_name{
+        color: #369;
+    }
+    .comment_time{
+        color: #b4b4b4;
+    }
+</style>

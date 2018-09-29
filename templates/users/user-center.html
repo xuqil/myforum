@@ -1,0 +1,171 @@
+{% extends 'users/user-center-base.html' %}
+
+{% block content %}
+
+    <div class="item">
+        <div class="content">
+            <h3>用户名</h3>
+            <div class="description">
+                <p>{{ request.user }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+
+    <form class="ui large form" action="{% url 'users:user_name_update' %}" method="post" autocomplete="off">
+        <div class="item">
+            <div class="content">
+                <div class="description">
+                    <div class="ui form">
+                        <div class="inline field">
+                            <label>用户名</label>
+                            <input type="text" name="username" value="{{ register_form.username.value }}"
+                                   placeholder="{{ request.user }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+    <button class="ui teal button" type="submit" id="btn-mod">确认修改</button>
+        {% csrf_token %}
+    </form>
+    <div>{{ msg }}</div>
+    <div>{% for key, error in name_update_form.errors.items %}{{ error }}{% endfor %}</div>
+
+    <div class="item">
+        <div class="content">
+            <h3>补充用户信息</h3>
+
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+
+    <form action="{% url 'users:user_center_modify' %}" method="post">
+        <div class="item">
+            <div class="content">
+                <div class="description">
+                    <div class="ui form">
+                        <div class="inline field">
+                            <label>昵称</label>
+                            <input type="text" name="nick_name" placeholder="{{ request.user.nick_name }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+
+        <div class="item">
+            <div class="content">
+                <div class="description">
+                    <div class="ui form">
+                        <div class="inline field">
+                            <label>邮箱</label>
+                            <input type="text" name="email" placeholder="{{ request.user.email }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+
+        <div class="item">
+            <div class="content">
+                <div class="description">
+                    <div class="ui form">
+                        <div class="inline field">
+                            <label>手机</label>
+                            <input type="text" name="mobile" placeholder="{{ request.user.mobile }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+
+        <button class="ui teal button" type="submit" id="btn-mod">确认修改</button>
+        {% csrf_token %}
+    </form>
+
+    <div class="item">
+        <div class="content">
+            <h3>头像</h3>
+            <div class="description">
+                <img src="{{ MEDIA_URL }}{{ request.user.avatar }}" width="100" height="100" class="ui circular image">
+            </div>
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+
+    <form enctype="multipart/form-data" action="{% url 'users:user_center_avatar' %}" method="post" autocomplete="off">
+        <div class="item">
+            <div class="content">
+                <div class="description">
+                    <div class="ui form">
+                        <div class="inline field">
+                            <label>头像</label>
+                            <input type="file" name="avatar">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
+    <button class="ui teal button" type="submit" id="btn-mod">确认修改</button>
+        {% csrf_token %}
+    </form>
+
+    <div class="item">
+        <div class="content">
+            <h3>密码</h3>
+        </div>
+    </div>
+    <div class="ui hidden divider"></div>
+
+    <form class="ui large form" action="{% url 'users:user_password_update' %}" method="post">
+        <div class="item">
+            <div class="field">
+                <label>当前密码</label>
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" name="old_password" placeholder="请输入用户密码">
+                </div>
+            </div>
+            <div class="field">
+                <label>新密码</label>
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" name="new_password" placeholder="请输入新密码">
+                </div>
+            </div>
+            <div class="field">
+                <label>确认新密码</label>
+                <div class="ui left icon input">
+                    <i class="lock icon"></i>
+                    <input type="password" name="two_new_password" placeholder="请再次输入新密码">
+                </div>
+            </div>
+            <button class="ui teal button" type="submit">更改密码</button>
+        </div>
+        {% csrf_token %}
+    </form>
+
+    <div>{{ password_update_form_msg }}</div>
+    <div>{{ msg }}</div>
+    <div>{% for key, error in password_update_form.errors.items %}{{ error }}{% endfor %}</div>
+
+
+    <script>
+        $('#btn-mod').click(function () {
+            if (data.status == 'success') {
+                $('#btn-mod').alert("修改成功");
+            } else if (data.status == 'fail') {
+                $('#btn-mod').alert("修改失败");
+            }
+
+        })
+    </script>
+{% endblock %}
+
+

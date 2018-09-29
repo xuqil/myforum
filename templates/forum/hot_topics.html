@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load forum_tags %}
+{% block title %}
+    技术小玩家
+{% endblock %}
+
+{% block con_ten %}
+    <div class="ui raised segment">
+        <div class="ui secondary pointing menu">
+            <a class="item" href="{% url 'forum:index' %}">
+                主页
+            </a>
+            <a class="active item" >
+                热门
+            </a>
+            <a class="item">
+                技术
+            </a>
+            <a class="item">
+                娱乐
+            </a>
+        </div>
+        <!--话题列表-->
+        <div class="ui big very relaxed selection list">
+        {% get_got_topics as hot_topics %}
+            {% for topic in hot_topics %}
+                <div class="item">
+                    <img class="ui avatar image" src="{{ MEDIA_URL }}{{ topic.user.avatar }}">
+                    <div class="content">
+                        <a class="header" href="{% url 'forum:detail' topic.id %}">{{ topic.title }}</a>
+                        <div class="description">
+                            <span class="" style="font-size: smaller;">{{ topic.user }}</span>
+                            <span class=""
+                                  style="font-size: x-small; color: #cfcfcf;"> • {{ topic.add_time | date:"M j, Y" }} • 板块& </span>
+                            <span class="" style="font-size: smaller;">
+                                <a style="font-size: smaller;" href="{% url 'forum:board_detail' topic.boards.id %}">
+                                {{ topic.boards }}
+                            </a></span>
+                            <span class="" style="font-size: x-small; color: #cfcfcf;"> • 阅读量{{ topic.views }} </span>
+                        </div>
+                    </div>
+                    {% if topic.topiccomment_set.count == 0 %}
+                        {% else %}
+                            <div class="ui right floated teal left pointing label">{{ topic.topiccomment_set.count }}</div>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block con_six %}
+    <div class="six wide column">
+    {% if request.user.is_authenticated %}
+            <!--个人信息-->
+            <div class="ui raised link centered card">
+                <div class="image">
+                    <img src="{{ MEDIA_URL }}{{ request.user.avatar }}">
+                </div>
+                <div class="content">
+                    <a class="header">{{ request.user }}</a>
+                    <div class="meta">
+                        <span class="date">{{ request.user.date_joined|date:"Y-m-d" }}加入</span>
+                    </div>
+                </div>
+                <div class="extra center aligned content">
+                    <div class="ui grid">
+                        <div class="three column row">
+                            <div class="column">
+                                <div class="ui list">
+
+                                    <div class="item">&nbsp;
+                                        <a href="#">
+                                            0
+                                        </a>
+                                    </div>
+                                    <div class="item">关注</div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui list">
+
+                                    <div class="item">&nbsp;
+                                        <a href="#">
+                                        0
+                                        </a>
+                                    </div>
+                                    <div class="item">粉丝</div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui list">
+                                    <a class="item" href="{% url 'forum:user_topics' request.user.pk %}">&nbsp;{{ topic_count }}</a>
+                                    <div class="item">帖子</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="ui raised segment">
+                <a href="{% url 'users:register' %}"><button  class="ui fluid teal button" id="test-btn">发帖</button></a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+
+
+
