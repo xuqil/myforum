@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}
+    {{ request.user }}
+{% endblock %}
+{% block con_ten %}
+    <div class="ui raised segment">
+        <div class="ui secondary pointing menu">
+            <a class="item" href="{% url 'forum:user_topics' request.user.pk %}">
+                <h3>{{ request.user  }}的帖子</h3>
+            </a>
+        </div>
+        <!--话题列表-->
+        <div class="ui big very relaxed selection list">
+            {% for topic in topics %}
+                <div class="item">
+                    <img class="ui avatar image" src="{{ MEDIA_URL }}{{ topic.user.avatar }}">
+                    <div class="content">
+                        <a class="header" href="{% url 'forum:detail' topic.id %}">{{ topic.title }}</a>
+                        <div class="description">
+                            <span class="" style="font-size: smaller;">{{ topic.user }}</span>
+                            <span class=""
+                                  style="font-size: x-small; color: #cfcfcf;"> • {{ topic.add_time | date:"M j, Y" }}</span>
+                            <!--<span class="" style="font-size: smaller;">Auther</span>-->
+                            <span class="" style="font-size: x-small; color: #cfcfcf;"> • 阅读量{{ topic.views }} </span>
+                        </div>
+                    </div>
+                    {% if topic.topiccomment_set.count == 0 %}
+                    {% else %}
+                        <div class="ui right floated teal left pointing label">{{ topic.topiccomment_set.count }}</div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p>该标签下没有主题发布！</p>
+            {% endfor %}
+        </div>
+
+        <!--分页-->
+        {% if is_paginated %}
+        <div class="ui divider"></div>
+            <div class="ui pagination menu">
+                {% if page_obj.number == 1 %}
+                    <a class="active item" href="?page=1">
+                    {{ page_obj.number }}
+                    </a>
+                {% else %}
+                    <a class="item" href="?page=1">1</a>
+                {% endif %}
+                <!--<a href="?page=1" class="item">1</a>-->
+
+                {% for page_num in paginator.page_range %}
+                  {% if page_num != 1 and page_num != paginator.num_pages %}
+                    {% if page_obj.number == page_num %}
+                        <a class="active item">{{ page_num }}</a>
+                        <!--向前三页-->
+                    {% elif page_obj.number|add:-3 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif page_obj.number|add:-2 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif page_obj.number|add:-1 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                        <!--向后三页-->
+                    {% elif page_obj.number|add:3 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif page_obj.number|add:2 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif page_obj.number|add:1 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% endif %}
+                  {% endif %}
+              {% endfor %}
+
+                <!--最后一页-->
+                {% if page_obj.number == paginator.num_pages %}
+                    <a class="active item">{{ paginator.num_pages }}</a>
+                {% else %}
+                          <a class="item" href="?page={{ paginator.num_pages }}">{{ paginator.num_pages }}</a>
+                {% endif %}
+            </div>
+
+                {% if page_obj.has_next %}
+                    <a class="circular ui right floated teal icon button" href="?page={{ page_obj.next_page_number }}">
+                        <i class="icon right chevron"></i>
+                    </a>
+                {% endif %}
+                {% if page_obj.has_previous %}
+                    <a class="circular ui right floated teal icon button"
+                       href="?page={{ page_obj.previous_page_number }}">
+                        <i class="icon left chevron"></i>
+                    </a>
+                {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block con_six %}
+{% endblock %}
+
+

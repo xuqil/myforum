@@ -1,0 +1,42 @@
+/*图片自适应*/
+
+.ShaShiDi img{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#searchform {
+    position: relative;
+    border: 1px solid #ddd;
+    min-height: 42px;
+}
+* {
+    outline: none;
+}
+form {
+    display: block;
+    margin-top: 0em;
+}
+
+input[type=search] {
+    -webkit-appearance: none;
+}
+
+input[type=search] {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    text-rendering: auto;
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+input[type=search] {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    -webkit-appearance: textfield;
+}

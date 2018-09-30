@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}
+    板块&专栏
+{% endblock %}
+
+{% block con_ten %}
+    {% for board in boards %}
+    <div class="ui raised segment">
+        <div class="ui secondary pointing menu">
+            <a class="header item" href="{% url 'forum:board_detail' board.id%}">
+                {{ board.name }}&emsp;&emsp;主题数：{{ board.topics.count }}
+            </a>
+        </div>
+        <!--话题列表-->
+        <div class="ui big very relaxed selection list">
+
+                <div class="item">
+                    <div class="content">
+                        <div class="ui secondary menu" style="overflow: hidden; text-overflow: ellipsis">
+                            {% for topic in board.topics.all %}
+                            <a class="item" href="{% url 'forum:detail' topic.id %}">
+                                 {{ topic }}
+                            </a>
+                                {% empty %}
+                                <h5>暂时还没有发布主题</h5>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}
