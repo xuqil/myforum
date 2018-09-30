@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'forum.apps.ForumConfig',
     'users',
+    'operation',
+    'ckeditor',  # 富文本编辑
+    'ckeditor_uploader',  # 富文本编辑
 ]
 
 MIDDLEWARE = [
@@ -65,6 +68,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 自动注册media到HTML，否则HTML取不到MEDIA_URL
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -103,6 +108,39 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# 富文本编辑加载配置
+CKEDITOR_CONFIGS = {
+    'default': {  # 添加默认配置
+    },
+    'my_cfg': {  # 添加自定义配置
+        'width': '655px',  # 设置宽度
+        'image_previewText': ' ',
+        'tabSpaces': 4,
+        'toolbar': 'Custom',
+        # 添加按钮在这里
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline', 'Format', 'Styles', 'RemoveFormat'],
+            ['NumberedList', 'BulletedList'],
+            ['Blockquote', 'CodeSnippet'],
+            ['Image', 'Link', 'Unlink'],
+            ['Maximize'],
+                        ],
+        # 插件
+        'extraPlugins': ','.join([
+            'codesnippet',  # 代码高亮插件
+            'uploadimage',
+            'widget',
+            'lineutils',
+            'div',
+            'autolink',
+            'autoembed',
+            'embedsemantic',
+            'autogrow',
+        ]),
+    },
+}
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -124,3 +162,15 @@ AUTH_USER_MODEL = 'users.UserProfile'
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'forum/static'),
+    'forum/static',
+)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
+
+CKEDITOR_UPLOAD_PATH = "upload/"  # 富文本编辑上传文件地址,图片将上传到项目下的media/upload路径下，图片的url是 /media/upload/
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_BROWSE_SHOW_DIRS = True  # 在编辑器里浏览上传的图片时，图片会以路径分组，日期排序

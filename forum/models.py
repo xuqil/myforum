@@ -1,6 +1,8 @@
 from django.db import models
 from users.models import UserProfile
 
+from ckeditor.fields import RichTextField
+
 
 class TopicTag(models.Model):
     """
@@ -44,7 +46,7 @@ class Topic(models.Model):
     """
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name=u"用户|")
     title = models.CharField(max_length=100, verbose_name=u"标题")
-    content = models.TextField(verbose_name=u"主题内容")
+    content = RichTextField(verbose_name=u"主题内容", config_name='my_cfg')
     boards = models.ForeignKey(Board, related_name='topics', on_delete=models.CASCADE,
                                verbose_name=u"论坛", default=u"Python")
     tags = models.ManyToManyField(TopicTag, blank=True)
