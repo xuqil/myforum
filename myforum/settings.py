@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'operation',
     'ckeditor',  # 富文本编辑
     'ckeditor_uploader',  # 富文本编辑
+    'haystack',  # 搜索插件
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,9 @@ TEMPLATES = [
                 # 自动注册media到HTML，否则HTML取不到MEDIA_URL
                 'django.template.context_processors.media',
             ],
+            # 添加自己建立的模板标签需要加入标签地址
+            'libraries': {
+                'forum_tags': 'forum.templatetags.forum_tags', }
         },
     },
 ]
@@ -174,3 +178,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 CKEDITOR_UPLOAD_PATH = "upload/"  # 富文本编辑上传文件地址,图片将上传到项目下的media/upload路径下，图片的url是 /media/upload/
 CKEDITOR_IMAGE_BACKEND = 'pillow'
 CKEDITOR_BROWSE_SHOW_DIRS = True  # 在编辑器里浏览上传的图片时，图片会以路径分组，日期排序
+
+# django-haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'forum.whoosh_cn_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    },
+}
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

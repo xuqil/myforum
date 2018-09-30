@@ -15,9 +15,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.static import serve
+from myforum.settings import MEDIA_ROOT
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('forum.urls', namespace='forum')),
     path('users/', include('users.urls', namespace='users')),
-]
+    path('media/<int:path>/', serve, {"document_root": MEDIA_ROOT}),  # 访问后台用户图片
+    path('operation/', include('operation.urls', namespace='operation')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),  # 富文本编辑后台url
+    path('search/', include('haystack.urls')),
+
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

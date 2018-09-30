@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load forum_tags %}
 {% block title %}
     技术小玩家
 {% endblock %}
@@ -24,27 +25,143 @@
         <div class="ui big very relaxed selection list">
             {% for topic in topics %}
                 <div class="item">
-                    <img class="ui avatar image" src="#">
+                    <img class="ui avatar image" src="{{ MEDIA_URL }}{{ topic.user.avatar }}">
                     <div class="content">
-                        <a class="header" href="#">{{ topic.title }}</a>
+                        <a class="header" href="{% url 'forum:detail' topic.id %}">{{ topic.title }}</a>
                         <div class="description">
                             <span class="" style="font-size: smaller;">{{ topic.user }}</span>
                             <span class=""
                                   style="font-size: x-small; color: #cfcfcf;"> • {{ topic.add_time | date:"M j, Y" }} • 板块& </span>
                             <span class="" style="font-size: smaller;">
-                                <a style="font-size: smaller;" href="#">
+                                <a style="font-size: smaller;" href="{% url 'forum:board_detail' topic.boards.id %}">
                                 {{ topic.boards }}
                             </a></span>
                             <span class="" style="font-size: x-small; color: #cfcfcf;"> • 阅读量{{ topic.views }} </span>
                         </div>
                     </div>
-                            <div class="ui right floated teal left pointing label">评论3</div>
+                    {% if topic.topiccomment_set.count == 0 %}
+                        {% else %}
+                            <div class="ui right floated teal left pointing label">{{ topic.topiccomment_set.count }}</div>
+                        {% endif %}
                     </div>
             {% endfor %}
         </div>
 
+        <!--分页-->
+    {% if is_paginated %}
+        <div class="ui divider"></div>
+            <div class="ui pagination menu">
+                {% if topics.number == 1 %}
+                    <a class="active item" href="?page=1">
+                    {{ topics.number }}
+                    </a>
+                {% else %}
+                    <a class="item" href="?page=1">1</a>
+                {% endif %}
+                <!--<a href="?page=1" class="item">1</a>-->
+                {% if is_paginated != 2%}
+                {% for page_num in paginator.page_range %}
+                  {% if page_num != 1 and page_num != paginator.num_pages %}
+                    {% if topics.number == page_num %}
+                        <a class="active item">{{ page_num }}</a>
+                        <!--向前三页-->
+                    {% elif topics.number|add:-3 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif topics.number|add:-2 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif topics.number|add:-1 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                        <!--向后三页-->
+                    {% elif topics.number|add:3 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif topics.number|add:2 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% elif topics.number|add:1 == page_num %}
+                            <a class="item" href="?page={{ page_num }}">{{ page_num }}</a>
+                    {% endif %}
+                  {% endif %}
+              {% endfor %}
+                {% endif %}
+                <!--最后一页-->
+                {% if topics.number == paginator.num_pages %}
+                    <a class="active item">{{ paginator.num_pages }}</a>
+                {% else %}
+                          <a class="item" href="?page={{ paginator.num_pages }}">{{ paginator.num_pages }}</a>
+                {% endif %}
+            </div>
+
+                {% if topics.has_next %}
+                    <a class="circular ui right floated teal icon button" href="?page={{ topics.next_page_number }}">
+                        <i class="icon right chevron"></i>
+                    </a>
+                {% endif %}
+                {% if topics.has_previous %}
+                    <a class="circular ui right floated teal icon button"
+                       href="?page={{ topics.previous_page_number }}">
+                        <i class="icon left chevron"></i>
+                    </a>
+                {% endif %}
+    {% endif %}
     </div>
 {% endblock %}
+
+{% block con_six %}
+    <div class="six wide column">
+    {% if request.user.is_authenticated %}
+            <!--个人信息-->
+            <div class="ui raised link centered card">
+                <div class="image">
+                    <img src="{{ MEDIA_URL }}{{ request.user.avatar }}">
+                </div>
+                <div class="content">
+                    <a class="header">{{ request.user }}</a>
+                    <div class="meta">
+                        <span class="date">{{ request.user.date_joined|date:"Y-m-d" }}加入</span>
+                    </div>
+                </div>
+                <div class="extra center aligned content">
+                    <div class="ui grid">
+                        <div class="three column row">
+                            <div class="column">
+                                <div class="ui list">
+
+                                    <div class="item">&nbsp;
+                                        <a href="#">
+                                            0
+                                        </a>
+                                    </div>
+                                    <div class="item">关注</div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui list">
+
+                                    <div class="item">&nbsp;
+                                        <a href="#">
+                                        0
+                                        </a>
+                                    </div>
+                                    <div class="item">粉丝</div>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ui list">
+                                    <a class="item" href="{% url 'forum:user_topics' request.user.pk %}">&nbsp;{{ topic_count }}</a>
+                                    <div class="item">帖子</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="ui raised segment">
+                <a href="{% url 'users:register' %}"><button  class="ui fluid teal button" id="test-btn">发帖</button></a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
 
 
 
